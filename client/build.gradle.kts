@@ -10,11 +10,15 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation("org.jetbrains.compose.ui:ui:1.5.10")
     implementation("org.jetbrains.compose.material:material:1.5.10")
     implementation("org.jetbrains.compose.desktop:desktop:1.5.10")
     implementation("org.jetbrains.compose.desktop:desktop:1.5.10")
+
     runtimeOnly("org.jetbrains.skiko:skiko-awt-runtime-windows-x64:0.7.85")
+
     implementation("org.jetbrains.compose.desktop:desktop:1.5.10")
     implementation("io.ktor:ktor-client-core:2.3.4")
     implementation("io.ktor:ktor-client-cio:2.3.4")
@@ -24,7 +28,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.erp.client.MainKt")
+    mainClass.set("com.erp.client.ClientKt")
 }
 
 kotlin {
@@ -39,7 +43,7 @@ tasks.register("runWithServer") {
     doLast {
         println("🔧 Uruchamiam serwer...")
 
-        val serverJar = "C:\\Users\\mateu\\OneDrive\\Pulpit\\erp_system\\server\\build\\libs\\server-1.0-SNAPSHOT-all.jar"
+        val serverJar = "E:\\JAVA\\Projekty\\kotlin\\erp-system\\server\\build\\libs\\server-1.0-SNAPSHOT-all.jar"
         val process = ProcessBuilder("java", "-jar", serverJar)
             .redirectErrorStream(true)
             .start()
@@ -56,7 +60,7 @@ tasks.register("runWithServer") {
         val classpath = sourceSets["main"].runtimeClasspath.asPath
 
         exec {
-            commandLine("java", "-cp", classpath, "com.erp.client.MainKt")
+            commandLine("java", "-cp", classpath, "com.erp.client.ClientKt")
         }
 
         println("🛑 Zatrzymuję serwer...")

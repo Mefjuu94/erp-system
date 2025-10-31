@@ -10,7 +10,6 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

@@ -19,5 +19,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "erp_system"
-include("client", "server")
+include("client", "server", "shared")
+
 

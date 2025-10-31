@@ -12,17 +12,22 @@ repositories {
 }
 
 application {
-    mainClass.set("com.erp.server.MainKt")
+    mainClass.set("com.erp.server.ServerKt")
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation("io.ktor:ktor-server-core:2.3.4")
     implementation("io.ktor:ktor-server-netty:2.3.4")
     implementation("io.ktor:ktor-server-content-negotiation:2.3.4")
+
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
+
     implementation("org.jetbrains.exposed:exposed-core:0.41.1")
     implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("ch.qos.logback:logback-classic:1.4.11")
 }
@@ -43,3 +48,10 @@ tasks.build {
 kotlin {
     jvmToolchain(21)
 }
+
+sourceSets {
+    main {
+        resources.srcDir("src/main/resources")
+    }
+}
+
