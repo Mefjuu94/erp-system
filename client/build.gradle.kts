@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 plugins {
     kotlin("jvm")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -44,7 +46,11 @@ tasks.register("runWithServer") {
     doLast {
         println("🔧 Uruchamiam serwer...")
 
-        val serverJar = "E:\\JAVA\\Projekty\\kotlin\\erp-system\\server\\build\\libs\\server-1.0-SNAPSHOT-all.jar"
+        val serverJar = Paths.get(
+            rootDir.absolutePath,
+            "server", "build", "libs", "server-1.0-SNAPSHOT-all.jar"
+        ).toFile().absolutePath
+
         val process = ProcessBuilder("java", "-jar", serverJar)
             .redirectErrorStream(true)
             .start()
