@@ -49,6 +49,11 @@ kotlin {
     jvmToolchain(21)
 }
 
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+
 sourceSets {
     main {
         resources.srcDir("src/main/resources")

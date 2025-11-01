@@ -54,17 +54,6 @@ fun Application.module() {
         get("/ping") {
             call.respondText("pong")
 
-            var testUser = UserDao.create(User(1, "testUser", "Testemail@email.com"))
-            println(testUser.toString())
-
-        }
-
-        get("/user") {
-            var testUser = UserDao.create(User(1, "testUser", "Testemail@email.com"))
-            call.respondText("new user: ${testUser.toString()}")
-
-            println(testUser.toString())
-
         }
     }
 }

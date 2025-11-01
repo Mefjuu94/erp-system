@@ -1,13 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.0.0"
+    kotlin("jvm")
     kotlin("plugin.serialization") version "2.0.0"
-}
-
-
-allprojects {
-    repositories {
-        mavenCentral()
-    }
 }
 
 group = "org.example"
@@ -19,9 +12,12 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+kotlin {
+    jvmToolchain(21)
 }

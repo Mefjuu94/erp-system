@@ -6,6 +6,7 @@ import model.toUser
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
+
 object UserDao {
     fun create(user: User): User {
         val id = transaction {
@@ -20,4 +21,11 @@ object UserDao {
     fun getAll(): List<User> = transaction {
         UserTable.selectAll().map { it.toUser() }
     }
+
+    fun getById(id: Int): User? = transaction {
+        UserTable.select { UserTable.id eq id }
+            .map { it.toUser() }
+            .singleOrNull()
+    }
+
 }
