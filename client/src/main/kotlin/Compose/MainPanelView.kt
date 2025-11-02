@@ -1,4 +1,4 @@
-package com.erp.client
+package com.erp.client.Compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

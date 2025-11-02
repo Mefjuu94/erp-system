@@ -7,12 +7,16 @@ import org.jetbrains.exposed.sql.ResultRow
 //Zawiera definicję tabeli w bazie danych (Exposed ORM). To mówi, jak wygląda tabela users w PostgreSQL.
 object UserTable : IntIdTable("users") {
     val username = varchar("username", 50)
-    val email = varchar("email", 100)
+    val surname = varchar("surname", 50)
+    val role = varchar("role", 50)
+    val hours = varchar("hours", 50)
 }
 
 //zamienia wiersz z bazy (ResultRow) na obiekt User.
 fun ResultRow.toUser(): User = User(
     id = this[UserTable.id].value,
     username = this[UserTable.username],
-    email = this[UserTable.email]
+    surname = this[UserTable.surname],
+    role = this[UserTable.role],
+    hours = this[UserTable.hours],
 )

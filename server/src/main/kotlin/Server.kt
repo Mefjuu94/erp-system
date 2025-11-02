@@ -13,6 +13,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import model.UserTable
 import org.jetbrains.exposed.sql.*
 
 import model.allTables
@@ -45,6 +46,7 @@ fun Application.module() {
     println("✅ Połączono z bazą danych!")
 
     transaction {
+        SchemaUtils.createMissingTablesAndColumns(UserTable)
         SchemaUtils.create(*allTables.toTypedArray())
     }
 

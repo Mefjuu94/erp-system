@@ -9,13 +9,17 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object UserDao {
     fun create(user: User): User {
-        val id = transaction {
-            UserTable.insertAndGetId {
+        var insertedUser: User? = null
+        transaction {
+            val id = UserTable.insertAndGetId {
                 it[username] = user.username
-                it[email] = user.email
+                it[surname] = user.surname
+                it[role] = user.role
+                it[hours] = user.hours
             }.value
+            insertedUser = user.copy(id = id)
         }
-        return user.copy(id = id)
+        return insertedUser!!
     }
 
     fun getAll(): List<User> = transaction {
@@ -24,6 +28,18 @@ object UserDao {
 
     fun getById(id: Int): User? = transaction {
         UserTable.select { UserTable.id eq id }
+            .map { it.toUser() }
+            .singleOrNull()
+    }
+
+    fun getBySurname(surname: String): User? = transaction {
+        UserTable.select { UserTable.surname eq surname }
+            .map { it.toUser() }
+            .singleOrNull()
+    }
+
+    fun getByRole(role: String): User? = transaction {
+        UserTable.select { UserTable.role eq role }
             .map { it.toUser() }
             .singleOrNull()
     }

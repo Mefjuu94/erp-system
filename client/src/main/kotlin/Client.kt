@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import classModels.User
+import com.erp.client.Compose.LoginView
+import com.erp.client.Compose.MainPanelView
 
 
 @Serializable
@@ -80,6 +82,7 @@ fun AppContent() {
             MainPanelView(loggedUser!!)
         } else {
             LoginView(
+                client,
                 onLoginSuccess = { user ->
                     loggedUser = user
                     isLoggedIn = true
