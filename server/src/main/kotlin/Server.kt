@@ -1,8 +1,6 @@
 package com.erp.server
 
-import classModels.User
 import com.typesafe.config.ConfigFactory
-import dao.UserDao
 import routes.userRoutes
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*

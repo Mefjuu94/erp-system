@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import classModels.User
 import com.erp.client.Compose.LoginView
-import com.erp.client.Compose.MainPanelView
+import com.erp.client.Compose.masterUser.MainPanelView
 
 
 @Serializable

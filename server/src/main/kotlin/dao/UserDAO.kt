@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 
-object UserDao {
+object UserDAO {
     fun create(user: User): User {
         var insertedUser: User? = null
         transaction {
@@ -16,6 +16,7 @@ object UserDao {
                 it[surname] = user.surname
                 it[role] = user.role
                 it[hours] = user.hours
+                it[title] = user.title
             }.value
             insertedUser = user.copy(id = id)
         }

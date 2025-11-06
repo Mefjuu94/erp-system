@@ -5,5 +5,6 @@ enum class ItemType {
     RAW_MATERIAL,
     FASTENER,
     TOOL,
-    SUBASSEMBLY
+    SUBASSEMBLY,
+    FINAL_PRODUCT
 }

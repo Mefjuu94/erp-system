@@ -1,8 +1,7 @@
 package routes
 
 import classModels.User
-import dao.UserDao
-import io.ktor.server.application.*
+import dao.UserDAO
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,12 +13,12 @@ fun Route.userRoutes() {
         post("/adduser") {
             println("ADD USER")
             val user = call.receive<User>()
-            val created = UserDao.create(user)
+            val created = UserDAO.create(user)
             call.respond(HttpStatusCode.Created, created)
         }
 
         get {
-            call.respond(UserDao.getAll())
+            call.respond(UserDAO.getAll())
         }
 
         get("/login/{id}") {
@@ -29,7 +28,7 @@ fun Route.userRoutes() {
                 return@get
             }
 
-            val user = UserDao.getById(id)
+            val user = UserDAO.getById(id)
             if (user != null) {
                 call.respond(HttpStatusCode.OK, user)
             } else {

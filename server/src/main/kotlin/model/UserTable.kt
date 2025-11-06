@@ -10,6 +10,7 @@ object UserTable : IntIdTable("users") {
     val surname = varchar("surname", 50)
     val role = varchar("role", 50)
     val hours = varchar("hours", 50)
+    val title = varchar("title", 50)
 }
 
 //zamienia wiersz z bazy (ResultRow) na obiekt User.
@@ -19,4 +20,5 @@ fun ResultRow.toUser(): User = User(
     surname = this[UserTable.surname],
     role = this[UserTable.role],
     hours = this[UserTable.hours],
+    title = this[UserTable.title]
 )

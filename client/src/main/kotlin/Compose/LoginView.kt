@@ -112,8 +112,8 @@ fun LoginView(client: HttpClient, onLoginSuccess: (User) -> Unit) {
     }
 }
 
-suspend fun createUser(client: HttpClient, username: String, surname: String, role: String, hours: String): String {
-    val user = User(username = username, surname = surname, role = role, hours = hours)
+suspend fun createUser(client: HttpClient, username: String, surname: String, role: String, hours: String,title: String): String {
+    val user = User(username = username, surname = surname, role = role, hours = hours, title = title)
     return try {
         val response: User = client.post("http://localhost:8080/users/adduser") {
             contentType(ContentType.Application.Json)
