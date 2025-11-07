@@ -1,22 +1,16 @@
 package com.erp.client.Compose
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import classModels.User
 import io.ktor.client.*
-import io.ktor.client.call.body
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,15 +24,15 @@ fun AddUserForm(client: HttpClient, onUserCreated: (String) -> Unit) {
     var expanded1 by remember { mutableStateOf(false) }
     var expanded2 by remember { mutableStateOf(false) }
 
-    val optionsForRole = listOf("Frezer", "Tokarz", "Spawacz", "szlifierz", "Pilarz")
-    val optionsForTitle = listOf("pracownik", "mistrz produkcji")
+    val occupationOptions = listOf("Frezer", "Tokarz", "Spawacz", "szlifierz", "Pilarz")
+    val roleOptions = listOf("pracownik", "mistrz produkcji")
 
-    var selectedOptionForRole by remember { mutableStateOf(optionsForRole[0]) }
-    var selectedOptionForTitle by remember { mutableStateOf(optionsForTitle[0]) }
+    var selectedOccupation by remember { mutableStateOf(occupationOptions[0]) }
+    var selectedRole by remember { mutableStateOf(roleOptions[0]) }
 
     var createStatus by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -53,42 +47,44 @@ fun AddUserForm(client: HttpClient, onUserCreated: (String) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
 
-
-        Text("Rola: $selectedOptionForRole")
-        OutlinedButton(onClick = { expanded1 = true }) {
-            Text(selectedOptionForRole)
-        }
-
-        DropdownMenu(
-            expanded = expanded1,
-            onDismissRequest = { expanded1 = false }
-        ) {
-            optionsForRole.forEach { option ->
-                DropdownMenuItem(onClick = {
-                    selectedOptionForRole = option
-                    expanded1 = false
-                }) {
-                    Text(option)
-                }
-            }
-        }
-
-        Text("Funkcja: $selectedOptionForTitle")
+        Text("Funkcja: $selectedRole")
 
         OutlinedButton(onClick = { expanded2 = true }) {
-            Text(selectedOptionForTitle)
+            Text(selectedRole)
         }
 
         DropdownMenu(
             expanded = expanded2,
             onDismissRequest = { expanded2 = false }
         ) {
-            optionsForTitle.forEach { option ->
+            roleOptions.forEach { option ->
                 DropdownMenuItem(onClick = {
-                    selectedOptionForTitle = option
+                    selectedRole = option
                     expanded2 = false
                 }) {
                     Text(option)
+                }
+            }
+        }
+
+        if (selectedRole == "pracownik") {
+
+            Text("zawód: $selectedOccupation")
+            OutlinedButton(onClick = { expanded1 = true }) {
+                Text(selectedOccupation)
+            }
+
+            DropdownMenu(
+                expanded = expanded1,
+                onDismissRequest = { expanded1 = false }
+            ) {
+                occupationOptions.forEach { option ->
+                    DropdownMenuItem(onClick = {
+                        selectedOccupation = option
+                        expanded1 = false
+                    }) {
+                        Text(option)
+                    }
                 }
             }
         }
@@ -98,7 +94,7 @@ fun AddUserForm(client: HttpClient, onUserCreated: (String) -> Unit) {
         Button(
             onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
-                    val result = addUser(client, username, surname, selectedOptionForRole, "0", title = selectedOptionForTitle)
+                    val result = addUser(client, username, surname, selectedOccupation, "0", title = selectedRole)
                     withContext(Dispatchers.Main) {
                         onUserCreated(result)
                     }
