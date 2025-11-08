@@ -30,6 +30,8 @@ dependencies {
 
     implementation("org.postgresql:postgresql:42.6.0")
     implementation("ch.qos.logback:logback-classic:1.4.11")
+
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {

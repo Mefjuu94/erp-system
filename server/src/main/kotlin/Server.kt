@@ -1,5 +1,6 @@
 package com.erp.server
 
+import com.erp.server.routes.productRoute
 import com.typesafe.config.ConfigFactory
 import routes.userRoutes
 import io.ktor.serialization.kotlinx.json.*
@@ -50,6 +51,8 @@ fun Application.module() {
 
     routing {
         userRoutes()
+        productRoute()
+
 
         get("/ping") {
             call.respondText("pong")

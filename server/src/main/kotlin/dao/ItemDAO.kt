@@ -6,8 +6,9 @@ object ItemDAO {
     private val itemStorage = mutableMapOf<Int, Item>()
 
     fun getItemById(id: Int): Item? = itemStorage[id]
+    fun getItemByName(name: String): Item? = itemStorage.values.find { it.name == name }
 
-    fun saveItem(item: Item) {
+    fun createItem(item: Item) {
         itemStorage[item.id] = item
     }
 
