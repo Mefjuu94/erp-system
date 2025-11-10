@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import classModels.User
+import com.erp.client.adressPrefix
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -120,7 +121,7 @@ suspend fun addUser(
         if (exists) {
             "❗ Użytkownik już istnieje! ID: $id"
         } else {
-            val createdUser: User = client.post("http://localhost:8080/users/adduser") {
+            val createdUser: User = client.post(adressPrefix + "users/adduser") {
                 contentType(ContentType.Application.Json)
                 setBody(User(username = username, surname = surname, role = role, hours = hours, title = title))
             }.body()

@@ -25,6 +25,8 @@ import com.erp.client.Compose.masterUser.MainPanelView
 @Serializable
 data class ServerStatus(val message: String)
 
+val adressPrefix = "http://localhost:8080/"
+
 val client = HttpClient(CIO) {
     install(ContentNegotiation) {
         json()
@@ -45,7 +47,7 @@ fun main() = application {
 
             LaunchedEffect(Unit) {
                 try {
-                    val response: String = client.get("http://localhost:8080/ping").body()
+                    val response: String = client.get(adressPrefix + "ping").body()
                     pingStatus = response
                 } catch (e: Exception) {
                     pingStatus = "Błąd połączenia z serwerem."

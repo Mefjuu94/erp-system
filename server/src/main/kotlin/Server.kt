@@ -1,5 +1,7 @@
 package com.erp.server
 
+import com.erp.server.dao.ItemDAO
+import com.erp.server.routes.itemRoute
 import com.erp.server.routes.productRoute
 import com.typesafe.config.ConfigFactory
 import routes.userRoutes
@@ -16,6 +18,7 @@ import model.UserTable
 import org.jetbrains.exposed.sql.*
 
 import model.allTables
+import org.example.classModels.item.Item
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -52,6 +55,7 @@ fun Application.module() {
     routing {
         userRoutes()
         productRoute()
+        itemRoute()
 
 
         get("/ping") {
