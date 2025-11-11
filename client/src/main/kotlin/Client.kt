@@ -1,6 +1,5 @@
 package com.erp.client
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
@@ -18,8 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import classModels.User
-import com.erp.client.Compose.LoginView
-import com.erp.client.Compose.masterUser.MainPanelView
+import com.erp.client.compose.LoginView
+import com.erp.client.compose.masterUser.MainPanelView
 
 
 @Serializable
@@ -36,6 +35,7 @@ val client = HttpClient(CIO) {
 fun main() = application {
     var isLoggedIn by remember { mutableStateOf(false) }
     var loggedUser by remember { mutableStateOf<User?>(null) }
+    var mode by remember { mutableStateOf("dashboard") } // 🔹 dodane
 
     if (!isLoggedIn) {
         Window(
@@ -82,7 +82,13 @@ fun main() = application {
             onCloseRequest = ::exitApplication,
             state = WindowState(width = 1200.dp, height = 1000.dp)
         ) {
-            MainPanelView(loggedUser!!)
+            MainPanelView(
+                user = loggedUser!!,
+                client = client,
+                mode = mode,
+                onModeChange = { mode = it } // 🔹 dodane
+            )
         }
     }
 }
+

@@ -1,4 +1,4 @@
-package com.erp.client.Compose
+package com.erp.client.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
