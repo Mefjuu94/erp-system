@@ -25,7 +25,7 @@ fun AddUserForm(client: HttpClient, onUserCreated: (String) -> Unit) {
     var expanded1 by remember { mutableStateOf(false) }
     var expanded2 by remember { mutableStateOf(false) }
 
-    val occupationOptions = listOf("Frezer", "Tokarz", "Spawacz", "szlifierz", "Pilarz")
+    val occupationOptions = listOf("Mistrz Produkcji","Frezer", "Tokarz", "Spawacz", "szlifierz", "Pilarz")
     val roleOptions = listOf("pracownik", "mistrz produkcji")
 
     var selectedOccupation by remember { mutableStateOf(occupationOptions[0]) }

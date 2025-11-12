@@ -1,6 +1,7 @@
 package com.erp.client.compose.masterUser
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import classModels.User
 import com.erp.client.compose.masterUser.mainPanelView.*
@@ -33,6 +36,7 @@ fun MainPanelView(
         Column(
             modifier = Modifier
                 .width(200.dp)
+                .background(Color(0xFFCAC7D4)) // bezpośredni hex
                 .fillMaxHeight()
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -48,11 +52,15 @@ fun MainPanelView(
         }
 
         // 🔸 Główna zawartość
-        Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Box(modifier = Modifier.fillMaxSize()
+            .background(Color(0xFFE8E3E3))
+            .padding(16.dp)) {
             when (mode) {
                 "dashboard" -> dashboardView(client)
                 "createMode" -> createModeView(client)
-                "users" -> usersView(client)
+                "users" -> usersView(client, onClick = { selectedUser ->
+                    println("Kliknięto użytkownika: ${selectedUser.username}")
+                })
                 "settings" -> settingsView(client)
                 else -> Text("Nieznany tryb: $mode")
             }
