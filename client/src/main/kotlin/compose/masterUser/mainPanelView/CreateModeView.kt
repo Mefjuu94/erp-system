@@ -1,9 +1,6 @@
 package com.erp.client.compose.masterUser.mainPanelView
 
 
-import io.ktor.client.HttpClient
-import org.example.classModels.item.ItemType
-
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,21 +10,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import classModels.User
 import com.erp.client.adressPrefix
-import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.example.classModels.item.Item
+import org.example.classModels.item.ItemType
+import java.awt.FileDialog
+import java.awt.Frame
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
 @Composable
 fun createModeView(client: HttpClient) {
@@ -38,7 +39,11 @@ fun createModeView(client: HttpClient) {
     var productSectionExpanded by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
-    var itemsList by remember { mutableStateOf<List<Item>>(emptyList())}
+    var itemsList by remember { mutableStateOf<List<Item>>(emptyList()) }
+    val serverResponse = remember { mutableStateOf<String?>(null) }
+    val isSuccess = remember { mutableStateOf<Boolean?>(null) }
+
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -88,19 +93,40 @@ fun createModeView(client: HttpClient) {
                             modifier = Modifier.fillMaxWidth()
                         )
 
+                        Button(onClick = {
+                            coroutineScope.launch {
+                                val client = HttpClient(CIO) {
+                                    install(ContentNegotiation) { json() }
+                                }
+
+                                val result = addItem(client, name = userInput, type = ItemType.COMPONENT.toString())
+                                serverResponse.value = result
+                            }
+                        }) {
+                            Text("Dodaj pojedynczy element")
+                        }
+
                         Button(
                             onClick = {
                                 coroutineScope.launch {
-                                    addItem(
-                                        client = client,
-                                        name = userInput,
-                                        type = ItemType.COMPONENT.toString()
-                                    )
+                                    val (success, message) = addItemsFromTextFile(false)
+                                    serverResponse.value = message
+                                    isSuccess.value = success
                                 }
                             },
                             modifier = Modifier.align(Alignment.End)
                         ) {
-                            Text("Stwórz")
+                            Text("Wczytaj z pliku tekstowego")
+                        }
+
+                        serverResponse.value?.let { message ->
+                            val color =
+                                if (isSuccess.value == true) Color(0xFF2E7D32) else Color(0xFFC62828) // zielony / czerwony
+                            Text(
+                                text = message,
+                                color = color,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
                         }
                     }
                 }
@@ -117,7 +143,7 @@ fun createModeView(client: HttpClient) {
                         onClick = {
                             CoroutineScope(Dispatchers.IO).launch {
                                 itemsList = fetchItems(client)
-                                println(itemsList) // TODO: zrobić wyświetlaną listę!
+                                println(itemsList)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(
@@ -268,7 +294,7 @@ fun createModeView(client: HttpClient) {
 
             }
         }
-        }
+    }
 }
 
 @Composable
@@ -304,19 +330,20 @@ fun SectionWithToggle(
 suspend fun addItem(
     client: HttpClient,
     name: String,
-    type: String,
+    type: String
 ): String {
     return try {
         val response: Item = client.post(adressPrefix + "item/addItem") {
             contentType(ContentType.Application.Json)
             setBody(Item(name = name, type = type))
         }.body()
-        "✅ Dodano: ${response.name}"
 
+        "✅ Dodano: ${response.name}"
     } catch (e: Exception) {
         "❌ Błąd: ${e.message}"
     }
 }
+
 
 suspend fun fetchItems(client: HttpClient): List<Item> {
     return try {
@@ -327,25 +354,40 @@ suspend fun fetchItems(client: HttpClient): List<Item> {
     }
 }
 
-fun sendImportRequest(path: String, useTypeFromColumn: Boolean) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val client = HttpClient(CIO) {
-                install(ContentNegotiation) {
-                    json()
-                }
-            }
+suspend fun addItemsFromTextFile(useTypeFromColumn: Boolean): Pair<Boolean, String> {
+    val path = chooseFilePath() ?: return false to "Nie wybrano pliku"
 
-            val response = client.post(adressPrefix + "item/addItemsFromExcel") {
-                url {
-                    parameters.append("path", path)
-                    parameters.append("useTypeFromColumn", useTypeFromColumn.toString())
-                }
-            }
+    val fileContent = File(path.toString()).readText()
 
-            println("Odpowiedź serwera: ${response.status}")
-        } catch (e: Exception) {
-            println("Błąd wysyłania żądania: ${e.message}")
+    return try {
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) { json() }
         }
+
+        val response = client.post(adressPrefix + "item/addItemsFromTextFile") {
+            setBody(fileContent)
+            contentType(ContentType.Text.Plain)
+            url {
+                parameters.append("useTypeFromColumn", useTypeFromColumn.toString())
+            }
+        }
+
+        val bodyText = response.bodyAsText()
+        val success = response.status.value in 200..299
+        success to "Status: ${response.status}, Treść: $bodyText"
+    } catch (e: Exception) {
+        false to "Błąd: ${e.message}"
+    }
+}
+
+
+fun chooseFilePath(): Path? {
+    val dialog = FileDialog(null as Frame?, "Wybierz plik", FileDialog.LOAD)
+    dialog.isVisible = true
+
+    return if (dialog.file != null && dialog.directory != null) {
+        Paths.get(dialog.directory, dialog.file)
+    } else {
+        null // użytkownik anulował wybór
     }
 }

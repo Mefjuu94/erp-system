@@ -1,11 +1,13 @@
 package com.erp.server.routes
 
 import com.erp.server.dao.ItemDAO
-import com.erp.server.utilities.importItemsFromExcel
+import com.erp.server.utilities.importItemsFromTextFile
+import com.sun.tools.javac.jvm.Items
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.MultiPartData
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
@@ -23,49 +25,52 @@ fun Route.itemRoute() {
         post("/addItem") {
             println("ADD ITEM")
             val item = call.receive<Item>()
-            val created = ItemDAO.createItem(item)
-            call.respond(HttpStatusCode.Created, created)
-            call.respondText("ADD iTEM")
-        }
 
-        post("/addItemsFromExcel") {
-            try {
-                val path = call.parameters["path"]
-                val useTypeFromColumn = call.parameters["useTypeFromColumn"]?.toBooleanStrictOrNull() ?: false
-
-                println("Ścieżka: $path")
-                println("Typ z kolumny: $useTypeFromColumn")
-
-                if (path == null) {
-                    call.respond(HttpStatusCode.BadRequest, "Brak parametru 'path'")
-                    return@post
-                }
-
-                val file = File(path)
-                if (!file.exists()) {
-                    call.respond(HttpStatusCode.NotFound, "Plik nie istnieje")
-                    return@post
-                }
-
-                val items = if (useTypeFromColumn) {
-                    importItemsFromExcel(file, defaultType = "UNKNOWN", useTypeFromColumn = true)
-                } else {
-                    importItemsFromExcel(file, defaultType = "COMPONENT", useTypeFromColumn = false)
-                }
-
-                println("ADD ITEMS FROM EXCEL")
-
-                val createdItems = items.map { item ->
-                    println("Tworzę: $item")
-                    ItemDAO.createItem(item)
-                }
-
-                call.respond(HttpStatusCode.Created, createdItems)
-            } catch (e: Exception) {
-                e.printStackTrace() // pokaże błąd w konsoli
-                call.respond(HttpStatusCode.InternalServerError, "Błąd serwera: ${e.message}")
+            val itemsInDatabase: List<Item> = ItemDAO.getAllItems()
+            if (itemsInDatabase.contains(item)){    //TODO NIE DZIAŁA
+                call.respondText("$item.name już istnieje")
+            }else {
+                val created = ItemDAO.createItem(item)
+                call.respond(HttpStatusCode.Created, created)
             }
+
         }
+
+        post("/addItemsFromTextFile") {
+            val content = call.receiveText()
+            val useTypeFromColumn = call.parameters["useTypeFromColumn"]?.toBooleanStrictOrNull() ?: false
+
+            val lines = content.lines().filter { it.isNotBlank() }
+            val items = lines.map { line ->
+                Item(name = line.trim(), type = if (useTypeFromColumn) "UNKNOWN" else "COMPONENT")
+            }
+
+            val createdItems = mutableListOf<Item>()
+            val itemsInDatabase: List<Item> = ItemDAO.getAllItems()
+
+            var duplicateCount = 0
+
+            items.forEach { item ->
+                val exists = itemsInDatabase.any { it.name == item.name }
+                if (exists) {
+                    duplicateCount++
+                } else {
+                    val created = ItemDAO.createItem(item)
+                    createdItems.add(created)
+                }
+            }
+            println("ilość duplikatów: $duplicateCount")
+
+            val responseMessage = buildString {
+                append("Utworzono ${createdItems.size} nowych elementów.")
+                if (duplicateCount > 0) {
+                    append(" Pominięto $duplicateCount duplikatów.")
+                }
+            }
+
+            call.respond(HttpStatusCode.Created, responseMessage)
+        }
+
 
 
 
