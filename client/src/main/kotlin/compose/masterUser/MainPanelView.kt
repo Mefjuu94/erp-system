@@ -46,9 +46,11 @@ fun MainPanelView(
             Divider()
 
             SidebarButton("📊 Dashboard", "dashboard", mode, onModeChange)
-            SidebarButton("🛠️ Tworzenie", "createMode", mode, onModeChange)
             SidebarButton("👥 Użytkownicy", "users", mode, onModeChange)
             SidebarButton("⚙️ Ustawienia", "settings", mode, onModeChange)
+            SidebarButton("➕ Produkt", "createProduct", mode, onModeChange)
+            SidebarButton("➕ Komponent", "createComponent", mode, onModeChange)
+
         }
 
         // 🔸 Główna zawartość
@@ -57,7 +59,9 @@ fun MainPanelView(
             .padding(16.dp)) {
             when (mode) {
                 "dashboard" -> dashboardView(client)
-                "createMode" -> createModeView(client)
+                "createComponent" -> createComponentView(client)
+                "createProduct" -> createProductView(client)
+
                 "users" -> usersView(client, onClick = { selectedUser ->
                     println("Kliknięto użytkownika: ${selectedUser.username}")
                 })

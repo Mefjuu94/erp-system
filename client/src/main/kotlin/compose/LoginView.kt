@@ -147,28 +147,3 @@ suspend fun checkIfUserExists(client: HttpClient, username: String): Pair<Boolea
         Pair(false, null)
     }
 }
-
-
-
-
-
-// Button(
-//                onClick = {
-//                    CoroutineScope(Dispatchers.IO).launch {
-//
-//                        val (exists, id) = checkIfUserExists(client, "Misiak")
-//
-//                        if (!exists) {
-//                            val result = createUser(client, "Misiak", "Kowalski", "welder", "0")
-//                            withContext(Dispatchers.Main) {
-//                                createStatus = result
-//                            }
-//
-//                        } else
-//                            createStatus = "użytkownik o tym imieniu już istnieje! Jego ID: $id"
-//                    }
-//                },
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                Text("➕ Dodaj nowego pracownika")
-//            }

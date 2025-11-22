@@ -1,23 +1,13 @@
 package com.erp.server.routes
 
 import com.erp.server.dao.ItemDAO
-import com.erp.server.utilities.importItemsFromTextFile
-import com.sun.tools.javac.jvm.Items
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.MultiPartData
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
-import io.ktor.server.request.receiveText
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.Route
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.route
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import org.example.classModels.item.Item
-import org.jetbrains.exposed.sql.Query
-import java.io.File
-import kotlin.text.toIntOrNull
+import org.example.classModels.item.ItemType
 
 fun Route.itemRoute() {
     route("/item") {
@@ -26,14 +16,15 @@ fun Route.itemRoute() {
             println("ADD ITEM")
             val item = call.receive<Item>()
 
-            val itemsInDatabase: List<Item> = ItemDAO.getAllItems()
-            if (itemsInDatabase.contains(item)){    //TODO NIE DZIAŁA
-                call.respondText("$item.name już istnieje")
-            }else {
+            val existing = ItemDAO.getAllItems().find { it.name.equals(item.name, ignoreCase = true) }
+
+            if (existing != null) {
+                println("${item.name} już istnieje")
+                call.respondText("${item.name} już istnieje")
+            } else {
                 val created = ItemDAO.createItem(item)
                 call.respond(HttpStatusCode.Created, created)
             }
-
         }
 
         post("/addItemsFromTextFile") {
@@ -42,7 +33,11 @@ fun Route.itemRoute() {
 
             val lines = content.lines().filter { it.isNotBlank() }
             val items = lines.map { line ->
-                Item(name = line.trim(), type = if (useTypeFromColumn) "UNKNOWN" else "COMPONENT")
+                Item(
+                    name = line.trim(),
+                    type = if (useTypeFromColumn) ItemType.RAW_MATERIAL else ItemType.COMPONENT
+                )
+
             }
 
             val createdItems = mutableListOf<Item>()
@@ -92,7 +87,6 @@ fun Route.itemRoute() {
         get("/items") {
             val items = ItemDAO.getAllItems()
             call.respond(HttpStatusCode.OK, items)
-            println(items)
         }
 
         get("/getItemByName") {

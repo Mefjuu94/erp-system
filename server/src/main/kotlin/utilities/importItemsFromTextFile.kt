@@ -17,8 +17,15 @@ fun importItemsFromTextFile(
     fun importItemsFromFile(filePath: String): List<Item> {
         return File(filePath).readLines()
             .filter { it.isNotBlank() }
-            .map { line -> Item(name = line.trim(), type = ItemType.COMPONENT.toString()) }
+            .map { line ->
+                val parts = line.split(";")
+                val name = parts[0].trim()
+                val type = if (parts.size > 1) ItemType.valueOf(parts[1].trim()) else ItemType.COMPONENT
+                Item(name = name, type = type)
+            }
     }
+
+
 
     return items
 }
